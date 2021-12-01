@@ -10,8 +10,8 @@ function measureDrops(array) {
 
     let counter = 0;
 
-    for (let i=0; i < measureBuffer.length; i++) {
-        if (measureBuffer[i+1] > measureBuffer[i]) {
+    for (let i=0; i < array.length; i++) {
+        if (array[i+1] > array[i]) {
             counter++;
         }
     }
