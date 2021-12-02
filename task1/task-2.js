@@ -2,9 +2,9 @@
 
 const fs = require('fs');
 
-let buffer = fs.readFileSync('input.txt');
+const buffer = fs.readFileSync('input.txt');
 
-let measureBuffer = String(buffer).split('\n').map(Number);
+const measureBuffer = String(buffer).split('\n').map(Number);
 
 function measureDrops(array) {
 

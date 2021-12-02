@@ -2,15 +2,15 @@
 
 const fs = require('fs');
 
-let buffer = fs.readFileSync('input.txt');
+const buffer = fs.readFileSync('input.txt');
 
-let measureBuffer = String(buffer).split('\n').map(Number);
+const measureBuffer = String(buffer).split('\n').map(Number);
 
 function measureDrops(array) {
 
     let counter = 0;
 
-    for (let i=0; i < array.length; i++) {
+    for (let i=0; i < array.length-1; i++) {
         if (array[i+1] > array[i]) {
             counter++;
         }
