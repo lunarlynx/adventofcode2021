@@ -6,23 +6,23 @@ const buffer = fs.readFileSync('input.txt');
 
 const pathArray = String(buffer).trim().split('\n').map(el => el.split(' '));
 
-let depth = 0;
-let path = 0;
-let aim = 0;
-
 function whereSubmarine(array) {
-
+    let depth = 0;
+    let path = 0;
+    let aim = 0;
     let pos = 0;
 
     for (let i = 0; i < array.length; i++) {
 
+        const sign = Number(array[i][1]);
+
         if (array[i][0] === 'forward') {
-            path = path + Number(array[i][1]);
-            depth = depth + aim * Number(array[i][1]);
+            path = path + sign;
+            depth = depth + aim * sign;
         } else if (array[i][0] === 'down') {
-            aim = aim + Number(array[i][1]);
+            aim = aim + sign;
         } else {
-            aim = aim - Number(array[i][1]);
+            aim = aim - sign;
         }
     }
 
