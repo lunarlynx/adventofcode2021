@@ -30,7 +30,7 @@ function findNoSuccessNumbers(card) {
     let arr = [];
     for (let i = 0; i < card.length; i++) {
         for (let j = 0; j < card[i].length; j++) {
-            if (card[i][j] > 0) {
+            if (card[i][j] >= 0) {
                 arr.push(card[i][j]);
             }
         }
@@ -80,10 +80,10 @@ function bingoGame(line, cards) {
         // перебираем карточки [ [],[],[] ]
         for (let j = 0; j < cards.length; j++) {
             // если нашли номер и проверка на бинго в карточке успешна
-            if (findNumberInTheCard(cards[j], i) && isItBingo(cards[j])) {
-                currentNumber = i;
+            if (findNumberInTheCard(cards[j], line[i]) && isItBingo(cards[j])) {
+                currentNumber = line[i];
                 noSuccess = findNoSuccessNumbers(cards[j]);
-                return [noSuccess, currentNumber];
+                return [cards[j], noSuccess, currentNumber];
                 break;
                 // если нашли номер, но бинго еще не случилось, просто переходим к следующему номеру
             } else {
@@ -93,7 +93,9 @@ function bingoGame(line, cards) {
     }
 }
 
-let sumNoSuccess = bingoGame(bingoLine, newBingoCards)[0].reduce((a, b) => (a + b));
-let result = bingoGame(bingoLine, newBingoCards)[1] * sumNoSuccess;
+let bingoWinner = bingoGame(bingoLine, newBingoCards);
+let sumNoSuccess = bingoWinner[1].reduce((a, b) => (a + b));
+let bingoWinNumber = bingoWinner[2];
+let result = sumNoSuccess * bingoWinNumber;
 
-console.log(sumNoSuccess);
+console.log(result);
