@@ -72,7 +72,6 @@ function bingoGame(line, cards) {
     let noSuccess = [];
     let currentNumber = 0;
     let winCard = [];
-    let countWinners = 0;
 
     // перебираем бочонки
     for (let i = 0; i < line.length; i++) {
@@ -81,11 +80,12 @@ function bingoGame(line, cards) {
         for (let j = 0; j < cards.length; j++) {
             // если нашли номер и проверка на бинго в карточке успешна, кладем ее данные в переменные
             // смотрим, чтобы количество победителей ограничилось количеством карточек
-            if (findNumberInTheCard(cards[j], line[i]) && isItBingo(cards[j]) && countWinners <= cards.length) {
-                countWinners++;
+            if (findNumberInTheCard(cards[j], line[i]) && isItBingo(cards[j])) {
                 currentNumber = line[i];
                 noSuccess = findNoSuccessNumbers(cards[j]);
                 winCard = cards[j];
+                cards.splice(cards[j], 1);
+
             } else {
                 continue;
             }
