@@ -38,22 +38,34 @@ function findNoSuccessNumbers(card) {
     return arr;
 }
 
+function arrayColumn(arr, n) {
+    return arr.map(x => x[n]);
+}
+
 // проверка, что в карточке есть заполненные строка или столбец
 function isItBingo(card) {
+    let countMinusI = 0;
+    let countMinusJ = 0;
+    let column = [];
+
     for (let i = 0; i < card.length; i++) {
-        let countMinusI = 0;
+        column = arrayColumn(card, i);
         for (let j = 0; j < card[i].length; j++) {
-            let countMinusJ = 0;
             if (card[i][j] < 0) {
                 countMinusI++;
-                countMinusJ++;
-            }
-            if (countMinusI === 5 || countMinusJ === 5) {
-                return true;
             }
         }
     }
-    return false;
+    for (let i = 0; i < column.length; i++) {
+        for (let j = 0; j < column[i].length; j++) {
+            if (card[i][j] < 0) {
+                countMinusJ++;
+            }
+        }
+    }
+    if (countMinusI === 5 || countMinusJ === 5) {
+        return true;
+    } else {return false}
 }
 
 function bingoGame(line, cards) {
@@ -69,18 +81,18 @@ function bingoGame(line, cards) {
         for (let j = 0; j < cards.length; j++) {
             // если нашли номер и проверка на бинго в карточке успешна
             if (findNumberInTheCard(cards[j], i) && isItBingo(cards[j])) {
+                console.log(cards[j]);
                 currentNumber = i;
                 noSuccess = findNoSuccessNumbers(cards[j]);
+                console.log(noSuccess);
+                return [noSuccess, currentNumber];
+                break;
                 // если нашли номер, но бинго еще не случилось, просто переходим к следующему номеру
             } else {
                 continue;
             }
         }
     }
-
-    // возвращаем порядковый номер и массив неотмеченных чисел
-    console.log(noSuccess);
-    return [noSuccess, currentNumber];
 }
 
 // TODO .reduce((a, b) => (a + b))
