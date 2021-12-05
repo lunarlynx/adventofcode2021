@@ -80,11 +80,14 @@ function bingoGame(line, cards) {
         // перебираем карточки [ [],[],[] ]
         for (let j = 0; j < cards.length; j++) {
             // если нашли номер и проверка на бинго в карточке успешна, кладем ее данные в переменные
+            // смотрим, чтобы количество победителей ограничилось количеством карточек
             if (findNumberInTheCard(cards[j], line[i]) && isItBingo(cards[j]) && countWinners <= cards.length) {
                 countWinners++;
                 currentNumber = line[i];
                 noSuccess = findNoSuccessNumbers(cards[j]);
                 winCard = cards[j];
+            } else if (countWinners > cards.length) {
+                break;
             } else {
                 continue;
             }
