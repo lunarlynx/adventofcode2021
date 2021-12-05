@@ -17,18 +17,17 @@ function findNumberInTheCard(card, number) {
         for (let j = 0; j < card[i].length; j++) {
             if (number === card[i][j]) {
                 // сделаем это число отрицательным, чтобы отметить (-1 для значения 0)
-                card[i][j] = -1 - card[i][j];
+                card[i][j] = -1;
                 return true;
-            } else {
-                return false;
             }
         }
     }
+    return false;
 }
 
 // считаем неуспешные номера, собираем их в массив (условие - они все положительные после прохождения предыдущей функции)
 function findNoSuccessNumbers(card) {
-    arr = 0;
+    let arr = [];
     for (let i = 0; i < card.length; i++) {
         for (let j = 0; j < card[i].length; j++) {
             if (card[i][j] > 0) {
@@ -51,12 +50,10 @@ function isItBingo(card) {
             }
             if (countMinusI === 5 || countMinusJ === 5) {
                 return true;
-            } else {
-                continue;
             }
         }
     }
-    console.log(card);
+    return false;
 }
 
 function bingoGame(line, cards) {
@@ -72,9 +69,8 @@ function bingoGame(line, cards) {
         for (let j = 0; j < cards.length; j++) {
             // если нашли номер и проверка на бинго в карточке успешна
             if (findNumberInTheCard(cards[j], i) && isItBingo(cards[j])) {
-                console.log(cards[j]);
                 currentNumber = i;
-                noSuccess = findNoSuccessNumbers(card[j]);
+                noSuccess = findNoSuccessNumbers(cards[j]);
                 // если нашли номер, но бинго еще не случилось, просто переходим к следующему номеру
             } else {
                 continue;
@@ -83,6 +79,7 @@ function bingoGame(line, cards) {
     }
 
     // возвращаем порядковый номер и массив неотмеченных чисел
+    console.log(noSuccess);
     return [noSuccess, currentNumber];
 }
 
