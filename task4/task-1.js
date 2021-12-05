@@ -6,20 +6,18 @@ const buffer = fs.readFileSync('input.txt');
 
 const dataArray = String(buffer).trim().split('\n\n').map(el => el.split("\n"));
 
-const bingoLine = String(dataArray[0]).split(',');
+const bingoLine = String(dataArray[0]).split(',').map(Number);
 const bingoCards = [...dataArray];
 bingoCards.shift();
+const newBingoCards = bingoCards.map(el => el.map(el => el.split(" ").filter(el => el.trim().length > 0).map(Number)));
 
 // проверка, что один конкретный номер присутствует в одной карточке
 function findNumberInTheCard(card, number) {
     for (let i = 0; i < card.length; i++) {
-        // элемент карточки все еще единая строка и содержит пробелы
-        card[i].replace("  ", " ").split(" ");
         for (let j = 0; j < card[i].length; j++) {
             if (number === card[i][j]) {
-                // сделаем это число отрицательным, чтобы отметить
-                // TODO: возможно, надо все привести к числам
-                card[i][j] = -card[i][j];
+                // сделаем это число отрицательным, чтобы отметить (-1 для значения 0)
+                card[i][j] = -1 - card[i][j];
                 return true;
             } else {
                 return false;
@@ -43,29 +41,42 @@ function findNoSuccessNumbers(card) {
 
 // проверка, что в карточке есть заполненные строка или столбец
 function isItBingo(card) {
-
+    for (let i = 0; i < card.length; i++) {
+        let countMinusI = 0;
+        for (let j = 0; j < card[i].length; j++) {
+            let countMinusJ = 0;
+            if (card[i][j] < 0) {
+                countMinusI++;
+                countMinusJ++;
+            }
+            if (countMinusI === 5 || countMinusJ === 5) {
+                return true;
+            } else {
+                continue;
+            }
+        }
+    }
+    console.log(card);
 }
 
 function bingoGame(line, cards) {
 
     let noSuccess = [];
+    // сюда будем сохранять последний порядковый номер бочонка
+    let currentNumber = 0;
 
     // перебираем бочонки
     for (let i = 0; i < line.length; i++) {
-        // сюда будем сохранять последний порядковый номер бочонка
-        let currentNumber = 0;
 
         // перебираем карточки [ [],[],[] ]
         for (let j = 0; j < cards.length; j++) {
-            // если не нашли номера в карточке, исключим ее из поиска
-            if (!findNumberInTheCard(cards[j])) {
-                cards.splice(cards[j], 1);
-                // если нашли номер и проверка на бинго успешна
-            } else if (findNumberInTheCard((cards[j]) && isItBingo(card[j])) {
+            // если нашли номер и проверка на бинго в карточке успешна
+            if (findNumberInTheCard(cards[j], i) && isItBingo(cards[j])) {
+                console.log(cards[j]);
                 currentNumber = i;
                 noSuccess = findNoSuccessNumbers(card[j]);
                 // если нашли номер, но бинго еще не случилось, просто переходим к следующему номеру
-            } else if (findNumberInTheCard(cards[j]) && !isItBingo(cards[j])) {
+            } else {
                 continue;
             }
         }
@@ -75,7 +86,8 @@ function bingoGame(line, cards) {
     return [noSuccess, currentNumber];
 }
 
-let sumNoSuccess = bingoGame(bingoLine, bingoCards)[0].reduce((a, b) => (a + b));
-let result = bingoGame(bingoLine, bingoCards)[1] * sumNoSuccess;
+// TODO .reduce((a, b) => (a + b))
+let sumNoSuccess = bingoGame(bingoLine, newBingoCards)[0];
+let result = bingoGame(bingoLine, newBingoCards)[1] * sumNoSuccess;
 
-console.log(result);
+// console.log(sumNoSuccess);
