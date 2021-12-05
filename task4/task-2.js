@@ -86,8 +86,6 @@ function bingoGame(line, cards) {
                 currentNumber = line[i];
                 noSuccess = findNoSuccessNumbers(cards[j]);
                 winCard = cards[j];
-            } else if (countWinners > cards.length) {
-                break;
             } else {
                 continue;
             }
