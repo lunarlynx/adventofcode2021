@@ -53,26 +53,39 @@ function allPointsFromArray(array) {
         }
     }
 
-    return allPointsArray;
+    let allPointsArrayString = allPointsArray.map(el => String(el));
+
+    return allPointsArrayString;
 }
 
-// собираем коллекцию повторов
+// собираем повторы
 function collectOverlaySet(array) {
-    let overlaySet = new Set();
+    let objOverlays = {};
 
     for (let i = 0; i < array.length; i++) {
-        let prevX = array[i][0];
-        let prevY = array[i][1];
-        let nextX = array[i+1][0];
-        let nextY = array[i+1][1];
-        if (prevX === nextX && prevY === nextY) {
-            overlaySet.add(array[i]);
+        let old = objOverlays[array[i]];
+        if (old == undefined) {
+            old =  0;
         }
+        objOverlays[array[i]] =  old + 1;
     }
 
-    return overlaySet;
+    return objOverlays;
+}
+
+// считаем повторы
+function sumOverlays(obj) {
+    let count = 0;
+    for (let key in obj) {
+        if (obj[key] > 1) {
+            count++;
+        }
+    }
+    return count;
 }
 
 let points = allPointsFromArray(equalPointsArray);
+let objPoints = collectOverlaySet(points);
+let result = sumOverlays(objPoints);
 
-console.log(collectOverlaySet(points));
+console.log(result);
