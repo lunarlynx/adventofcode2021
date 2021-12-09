@@ -4,103 +4,112 @@ const fs = require('fs');
 
 const buffer = fs.readFileSync('input.txt');
 
-const dataArray = String(buffer).trim().split('\n\n').map(el => el.split("\n"));
+const dataArray = String(buffer).trim().split("\n").map(el => el.split(" -> "));
+const pointsArray = dataArray.map(el => String(el).split(",").map(Number));
 
-const bingoLine = String(dataArray[0]).split(',').map(Number);
-const bingoCards = [...dataArray];
-bingoCards.shift();
-const newBingoCards = bingoCards.map(el => el.map(el => el.split(" ").filter(el => el.trim().length > 0).map(Number)));
-
-// проверка, что один конкретный номер присутствует в одной карточке
-function findNumberInTheCard(card, number) {
-    let result = false;
-
-    for (let i = 0; i < 5; i++) {
-        for (let j = 0; j < 5; j++) {
-            if (number === card[i][j]) {
-                // сделаем это число отрицательным, чтобы отметить (-1 для значения 0)
-                card[i][j] = -1;
-                result = true;
-            }
-        }
-    }
-    return result;
-}
-
-// считаем неуспешные номера, собираем их в массив (условие - они все положительные после прохождения предыдущей функции)
-function findNoSuccessNumbers(card) {
-    let arr = [];
-    for (let i = 0; i < card.length; i++) {
-        for (let j = 0; j < card[i].length; j++) {
-            if (card[i][j] >= 0) {
-                arr.push(card[i][j]);
-            }
-        }
-    }
-    return arr;
-}
-
-// проверка, что в карточке есть заполненные строка или столбец
-function isItBingo(card) {
-
-    for (let i = 0; i < 5; i++) {
-        let countMinusI = 0;
-
-        for (let j = 0; j < 5; j++) {
-            if (card[i][j] < 0) {
-                countMinusI++;
-            }
-        }
-        if (countMinusI === 5) {
-            return true;
-        }
-    }
-    for (let i = 0; i < 5; i++) {
-        let countMinusJ = 0;
-
-        for (let j = 0; j < 5; j++) {
-            if (card[j][i] < 0) {
-                countMinusJ++;
-            }
-        }
-        if (countMinusJ === 5) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function bingoGame(line, cards) {
-    let noSuccess = [];
-    let currentNumber = 0;
-    let winCard = [];
-
-    // перебираем бочонки
-    for (let i = 0; i < line.length; i++) {
-        let deleteInd = [];
-
-        // перебираем карточки [ [],[],[] ]
-        for (let j = 0; j < cards.length; j++) {
-            // если нашли номер и проверка на бинго в карточке успешна, кладем ее данные в переменные
-            if (findNumberInTheCard(cards[j], line[i]) && isItBingo(cards[j])) {
-                currentNumber = line[i];
-                noSuccess = findNoSuccessNumbers(cards[j]);
-                winCard = cards[j];
-                if (cards.length === 1) {
-                    return [winCard, noSuccess, currentNumber];
-                }
-                deleteInd.push(j);
-            }
-        }
-        for (let j = deleteInd.length - 1; j >= 0; j--) {
-            cards.splice(deleteInd[j], 1);
-        }
+// проверка, что отрезок вертикальный или горизонтальный, x=x или y=y
+function equalPoints(point) {
+    if (point[0] === point[2] || point[1] === point[3]) {
+        return true;
+    } else {
+        return false;
     }
 }
 
-let bingoWinner = bingoGame(bingoLine, newBingoCards);
-let sumNoSuccess = bingoWinner[1].reduce((a, b) => (a + b));
-let bingoWinNumber = bingoWinner[2];
-let result = sumNoSuccess * bingoWinNumber;
+// собираем массив точек, по которым проходит отрезок, теперь вместе с диагональными
+function allPointsFromSection(section) {
+    let pointsArray = [];
+
+    // если отрезок горизонтальный или вертикальный
+    if (equalPoints(section)) {
+        let points = Math.abs((section[2] - section[0]) + (section[3] - section[1]));
+
+        for (let i = 0; i <= points; i++) {
+            if ((section[0] - section[2]) > 0) {
+                let newPoint = [section[2] + i, section[1]];
+                pointsArray.push(newPoint);
+            } else if ((section[0] - section[2]) < 0) {
+                let newPoint = [section[2] - i, section[1]];
+                pointsArray.push(newPoint);
+            } else if ((section[1] - section[3]) > 0) {
+                let newPoint = [section[0], section[3] + i];
+                pointsArray.push(newPoint);
+            } else if ((section[1] - section[3]) < 0) {
+                let newPoint = [section[0], section[3] - i];
+                pointsArray.push(newPoint);
+            }
+        }
+    } else {
+        // если отрезок диагональный
+        let points = Math.abs((section[2] - section[0]));
+        let oldSectionx1 = section[0];
+        let oldSectiony1 = section[1];
+        let oldSectionx2 = section[2];
+        let oldSectiony2 = section[3];
+        if (section[0] > section[2]) {
+            section[0] = oldSectionx2;
+            section[1] = oldSectiony2;
+            section[2] = oldSectionx1;
+            section[3] = oldSectiony1;
+        }
+        for (let i = 0; i <= points ; i++) {
+            if (section[1] > section[3]) {
+                let newPoint = [section[0] + i, section[1] - i];
+                pointsArray.push(newPoint);
+            } else {
+                let newPoint = [section[0] + i, section[1] + i];
+                pointsArray.push(newPoint);
+            }
+        }
+    }
+
+    return pointsArray;
+}
+
+// собираем все точки в один массив
+function allPointsFromArray(array) {
+    let allPointsArray = [];
+
+    for (let i = 0; i < array.length; i++) {
+        let oneSection = allPointsFromSection(array[i]);
+        for (let j = 0; j < oneSection.length; j++) {
+            allPointsArray.push(oneSection[j]);
+        }
+    }
+
+    let allPointsArrayString = allPointsArray.map(el => String(el));
+
+    return allPointsArrayString;
+}
+
+// собираем повторы
+function collectOverlaySet(array) {
+    let objOverlays = {};
+
+    for (let i = 0; i < array.length; i++) {
+        let old = objOverlays[array[i]];
+        if (old == undefined) {
+            old =  0;
+        }
+        objOverlays[array[i]] =  old + 1;
+    }
+
+    return objOverlays;
+}
+
+// считаем повторы
+function sumOverlays(obj) {
+    let count = 0;
+    for (let key in obj) {
+        if (obj[key] > 1) {
+            count++;
+        }
+    }
+    return count;
+}
+
+let points = allPointsFromArray(pointsArray);
+let objPoints = collectOverlaySet(points);
+let result = sumOverlays(objPoints);
 
 console.log(result);
