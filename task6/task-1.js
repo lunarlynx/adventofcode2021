@@ -17,11 +17,6 @@ function newFish(fish) {
     }
 }
 
-// добавление свежих рыб в массив
-function addFish() {
-
-}
-
 let fishArray = originalFish;
 
 // запускаем 80-дневный цикл
