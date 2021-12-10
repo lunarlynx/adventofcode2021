@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const buffer = fs.readFileSync('input.txt');
 
-const originalFish = String(buffer).trim().split(",").map(el => Number(el));
+const fishArray = String(buffer).trim().split(",").map(el => Number(el));
 
 // проверяем, что рыба готова родить
 function newFish(fish) {
@@ -16,8 +16,6 @@ function newFish(fish) {
         return fish;
     }
 }
-
-let fishArray = originalFish;
 
 // запускаем 80-дневный цикл
 for (let i = 0; i < 80; i++) {
