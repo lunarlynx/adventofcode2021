@@ -7,7 +7,7 @@ const buffer = fs.readFileSync('input.txt');
 const crabArray = String(buffer).trim().split(",").map(el => Number(el));
 
 // Найти максимум из расстояний - это будет число точек, от которых будем считать топливо
-const maxCrab = Math.max.apply(null, crabArray);
+const maxCrab = Math.max(...crabArray);
 
 // Для каждой точки посчитать расстояние до нее от каждого краба
 // Суммировать все затраты
