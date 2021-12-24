@@ -6,6 +6,7 @@ const buffer = fs.readFileSync('input.txt');
 
 const data = String(buffer).trim().split("\n").map(el => el.split("").map(Number));
 
+// безопасное получение значения на отрицательных индексах
 function getValue(arr, i, j) {
     let arrElement = arr[i] ?? [];
 
@@ -17,24 +18,20 @@ function lowPointsRadar(array, i, j) {
     let count = 1;
     array[i][j] = -1;
 
-    while (getValue(array, i - 1, j) !== 9 && getValue(array, i - 1, j) !== undefined && getValue(array, i - 1, j) > 0) {
+    if (getValue(array, i - 1, j) !== 9 && getValue(array, i - 1, j) !== undefined && getValue(array, i - 1, j) >= 0) {
         count = count + lowPointsRadar(array, i - 1, j);
-        i--;
     }
 
-    while (getValue(array, i, j - 1) !== 9 && getValue(array, i, j - 1) !== undefined && getValue(array, i, j - 1) > 0) {
+    if (getValue(array, i, j - 1) !== 9 && getValue(array, i, j - 1) !== undefined && getValue(array, i, j - 1) >= 0) {
         count = count + lowPointsRadar(array, i, j - 1);
-        j--;
     }
 
-    while (getValue(array, i + 1, j) !== 9 && getValue(array, i + 1, j) !== undefined && getValue(array, i + 1, j) > 0) {
+    if (getValue(array, i + 1, j) !== 9 && getValue(array, i + 1, j) !== undefined && getValue(array, i + 1, j) >= 0) {
         count = count + lowPointsRadar(array, i + 1, j);
-        i++;
     }
 
-    while (getValue(array, i, j + 1) !== 9 && getValue(array, i, j + 1) !== undefined && getValue(array, i, j + 1) > 0) {
+    if (getValue(array, i, j + 1) !== 9 && getValue(array, i, j + 1) !== undefined && getValue(array, i, j + 1) >= 0) {
         count = count + lowPointsRadar(array, i, j + 1);
-        j++;
     }
 
     return count;
@@ -44,7 +41,6 @@ function lowPointsRadar(array, i, j) {
 function findBasin(array) {
     let count = 0;
     let basins = [];
-    let points = [];
     const max = array.length;
 
     for (let i = 0; i < max; i++) {
@@ -59,18 +55,30 @@ function findBasin(array) {
                 (plus_j === undefined || array[i][j] < array[i][j + 1]) &&
                 (minus_i === undefined || array[i][j] < array[i - 1][j])) {
 
-                // убрать 63
-                points.push(array[i][j]);
                 count = lowPointsRadar(array, i, j);
                 basins.push(count);
 
             }
         }
     }
-    console.log(points);
 
     return basins;
 }
 
-console.log(findBasin(data));
+// сортируем бассейны и берем три самых больших
+// перемножаем три больших
+function sortBasins(array) {
+    let sort = array.sort(function (a, b) {
+        return a - b;
+    });
+
+    let result = array[array.length - 1] * array[array.length - 2] * array[array.length - 3];
+
+    return result;
+}
+
+let b = findBasin(data);
+
+
+console.log(sortBasins(b));
 
