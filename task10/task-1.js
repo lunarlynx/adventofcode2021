@@ -7,6 +7,7 @@ const buffer = fs.readFileSync('input.txt');
 const data = String(buffer).trim().split("\n");
 
 // отсеиваем незавершенные строки, чтобы оставить только некорректные
+// считаем очки за прерывающие символы в каждой строке
 function sortIncorrectLines(array) {
 
     let result = [];
